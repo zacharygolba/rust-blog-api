@@ -20,6 +20,9 @@ mod routes;
 
 fn main() {
     rocket::ignite()
+        .mount("/", routes![
+            routes::health
+        ])
         .mount("/posts", routes![
             routes::posts::show,
             routes::posts::index,
