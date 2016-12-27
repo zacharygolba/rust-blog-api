@@ -1,11 +1,15 @@
+use chrono::{UTC, DateTime};
+
 use schema::posts;
 
-#[derive(Debug, Serialize, Queryable)]
+#[derive(Debug, Identifiable, Queryable, Serialize)]
 pub struct Post {
     pub id: i64,
     pub body: String,
     pub title: String,
     pub published: bool,
+    pub created_at: DateTime<UTC>,
+    pub updated_at: DateTime<UTC>,
 }
 
 #[derive(Debug, Deserialize, Insertable)]
@@ -21,4 +25,5 @@ pub struct PostChanges {
     pub body: Option<String>,
     pub title: Option<String>,
     pub published: Option<bool>,
+    pub updated_at: Option<DateTime<UTC>>,
 }

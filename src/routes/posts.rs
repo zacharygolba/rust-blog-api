@@ -1,3 +1,4 @@
+use chrono::UTC;
 use diesel;
 use diesel::prelude::*;
 use diesel::result::Error;
@@ -43,8 +44,12 @@ pub fn create(params: JSON<NewPost>) -> Result<JSON<Post>, Failure> {
 pub fn update(post_id: i64, params: JSON<PostChanges>) -> Result<JSON<Post>, Failure> {
     use schema::posts::dsl::*;
 
+    let mut change_set = params.unwrap();
+
+    change_set.updated_at = Some(UTC::now());
+
     diesel::update(posts.find(post_id))
-        .set(&params.unwrap())
+        .set(&change_set)
         .get_result::<Post>(&*CONNECTIONS.get().unwrap())
         .and_then(|post| Ok(JSON(post)))
         .or_else(|err| {
