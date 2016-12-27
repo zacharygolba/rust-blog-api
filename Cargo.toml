@@ -1,0 +1,19 @@
+[package]
+name = "rust-blog-api"
+version = "0.1.0"
+authors = ["Zachary Golba <zachary.golba@postlight.com>"]
+
+[dependencies]
+chrono = { version = "0.2", features = ["serde"] }
+diesel = "0.9"
+diesel_codegen = { version = "0.9", features = ["postgres"] }
+dotenv = "0.8"
+lazy_static = "0.2"
+r2d2 = "0.7"
+r2d2-diesel = "0.9"
+rocket = "0.1"
+rocket_codegen = "0.1"
+rocket_contrib = "0.1"
+serde = "0.8"
+serde_derive = "0.8"
+serde_json = "0.8"
