@@ -30,6 +30,13 @@ fn main() {
             routes::posts::update,
             routes::posts::destroy,
         ])
+        .mount("/authors", routes![
+            routes::authors::show,
+            routes::authors::index,
+            routes::authors::create,
+            routes::authors::update,
+            routes::authors::destroy,
+        ])
         .catch(errors![
             routes::errors::not_found,
             routes::errors::bad_request,

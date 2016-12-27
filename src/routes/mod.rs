@@ -2,8 +2,9 @@ use std::collections::HashMap;
 
 use rocket_contrib::JSON;
 
-pub mod posts;
+pub mod authors;
 pub mod errors;
+pub mod posts;
 
 #[get("/health", format = "application/json")]
 pub fn health() -> JSON<HashMap<&'static str, &'static str>> {
