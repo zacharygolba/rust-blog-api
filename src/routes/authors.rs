@@ -4,7 +4,7 @@ use diesel::prelude::*;
 use diesel::result::Error;
 use rocket::http::Status;
 use rocket::response::Failure;
-use rocket::response::status::NoContent;
+use rocket::response::status::{Created, NoContent};
 use rocket_contrib::JSON;
 
 use pool::CONNECTIONS;
@@ -30,13 +30,17 @@ pub fn index() -> Result<JSON<Vec<Author>>, Failure> {
 }
 
 #[post("/", data = "<params>", format = "application/json")]
-pub fn create(params: JSON<NewAuthor>) -> Result<JSON<Author>, Failure> {
+pub fn create(params: JSON<NewAuthor>) -> Result<Created<JSON<Author>>, Failure> {
     use schema::authors;
 
     diesel::insert(&params.unwrap())
         .into(authors::table)
-        .get_result(&*CONNECTIONS.get().unwrap())
-        .and_then(|author| Ok(JSON(author)))
+        .get_result::<Author>(&*CONNECTIONS.get().unwrap())
+        .and_then(|author| {
+            let location = format!("http://localhost:8000/authors/{}", author.id);
+
+            Ok(Created(location, Some(JSON(author))))
+        })
         .or(Err(Failure(Status::InternalServerError)))
 }
 
