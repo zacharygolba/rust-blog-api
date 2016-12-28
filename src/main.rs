@@ -13,34 +13,9 @@ extern crate serde_json;
 #[macro_use] extern crate serde_derive;
 #[macro_use] extern crate rocket_contrib;
 
-mod pool;
 mod models;
-mod schema;
 mod routes;
 
 fn main() {
-    rocket::ignite()
-        .mount("/", routes![
-            routes::health
-        ])
-        .mount("/posts", routes![
-            routes::posts::show,
-            routes::posts::index,
-            routes::posts::create,
-            routes::posts::update,
-            routes::posts::destroy,
-        ])
-        .mount("/authors", routes![
-            routes::authors::show,
-            routes::authors::index,
-            routes::authors::create,
-            routes::authors::update,
-            routes::authors::destroy,
-        ])
-        .catch(errors![
-            routes::errors::not_found,
-            routes::errors::bad_request,
-            routes::errors::internal_server_error,
-        ])
-        .launch();
+    routes::mount(rocket::ignite()).launch();
 }

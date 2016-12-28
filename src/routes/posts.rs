@@ -7,12 +7,12 @@ use rocket::response::Failure;
 use rocket::response::status::{Created, NoContent};
 use rocket_contrib::JSON;
 
-use pool::CONNECTIONS;
-use models::post::{Post, NewPost, PostChanges};
+use models::pool::CONNECTIONS;
+use models::post::{Post, NewPost, PostChangeSet};
 
 #[get("/<post_id>", format = "application/json")]
 pub fn show(post_id: i64) -> Result<JSON<Post>, Failure> {
-    use schema::posts::dsl::*;
+    use models::schema::posts::dsl::*;
 
     posts.find(post_id)
         .get_result::<Post>(&*CONNECTIONS.get().unwrap())
@@ -22,7 +22,7 @@ pub fn show(post_id: i64) -> Result<JSON<Post>, Failure> {
 
 #[get("/", format = "application/json")]
 pub fn index() -> Result<JSON<Vec<Post>>, Failure> {
-    use schema::posts::dsl::*;
+    use models::schema::posts::dsl::*;
 
     posts.load::<Post>(&*CONNECTIONS.get().unwrap())
         .and_then(|results| Ok(JSON(results)))
@@ -31,7 +31,7 @@ pub fn index() -> Result<JSON<Vec<Post>>, Failure> {
 
 #[post("/", data = "<params>", format = "application/json")]
 pub fn create(params: JSON<NewPost>) -> Result<Created<JSON<Post>>, Failure> {
-    use schema::posts;
+    use models::schema::posts;
 
     diesel::insert(&params.unwrap())
         .into(posts::table)
@@ -45,8 +45,8 @@ pub fn create(params: JSON<NewPost>) -> Result<Created<JSON<Post>>, Failure> {
 }
 
 #[patch("/<post_id>", data = "<params>", format="application/json")]
-pub fn update(post_id: i64, params: JSON<PostChanges>) -> Result<JSON<Post>, Failure> {
-    use schema::posts::dsl::*;
+pub fn update(post_id: i64, params: JSON<PostChangeSet>) -> Result<JSON<Post>, Failure> {
+    use models::schema::posts::dsl::*;
 
     let mut change_set = params.unwrap();
 
@@ -66,7 +66,7 @@ pub fn update(post_id: i64, params: JSON<PostChanges>) -> Result<JSON<Post>, Fai
 
 #[delete("/<post_id>", format = "application/json")]
 pub fn destroy(post_id: i64) -> Result<NoContent, Failure> {
-    use schema::posts::dsl::*;
+    use models::schema::posts::dsl::*;
 
     diesel::delete(posts.filter(id.eq(post_id)))
         .execute(&*CONNECTIONS.get().unwrap())

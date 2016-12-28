@@ -5,7 +5,7 @@ authors = ["Zachary Golba <zachary.golba@postlight.com>"]
 
 [dependencies]
 chrono = { version = "0.2", features = ["serde"] }
-diesel = { version = "0.9", features = ["chrono"] }
+diesel = { version = "0.9", features = ["chrono", "postgres"] }
 diesel_codegen = { version = "0.9", features = ["postgres"] }
 dotenv = "0.8"
 lazy_static = "0.2"

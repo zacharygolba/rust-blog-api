@@ -7,12 +7,12 @@ use rocket::response::Failure;
 use rocket::response::status::{Created, NoContent};
 use rocket_contrib::JSON;
 
-use pool::CONNECTIONS;
-use models::author::{Author, NewAuthor, AuthorChanges};
+use models::pool::CONNECTIONS;
+use models::author::{Author, NewAuthor, AuthorChangeSet};
 
 #[get("/<author_id>", format = "application/json")]
 pub fn show(author_id: i64) -> Result<JSON<Author>, Failure> {
-    use schema::authors::dsl::*;
+    use models::schema::authors::dsl::*;
 
     authors.find(author_id)
         .get_result::<Author>(&*CONNECTIONS.get().unwrap())
@@ -22,7 +22,7 @@ pub fn show(author_id: i64) -> Result<JSON<Author>, Failure> {
 
 #[get("/", format = "application/json")]
 pub fn index() -> Result<JSON<Vec<Author>>, Failure> {
-    use schema::authors::dsl::*;
+    use models::schema::authors::dsl::*;
 
     authors.load::<Author>(&*CONNECTIONS.get().unwrap())
         .and_then(|results| Ok(JSON(results)))
@@ -31,7 +31,7 @@ pub fn index() -> Result<JSON<Vec<Author>>, Failure> {
 
 #[post("/", data = "<params>", format = "application/json")]
 pub fn create(params: JSON<NewAuthor>) -> Result<Created<JSON<Author>>, Failure> {
-    use schema::authors;
+    use models::schema::authors;
 
     diesel::insert(&params.unwrap())
         .into(authors::table)
@@ -45,8 +45,8 @@ pub fn create(params: JSON<NewAuthor>) -> Result<Created<JSON<Author>>, Failure>
 }
 
 #[patch("/<author_id>", data = "<params>", format="application/json")]
-pub fn update(author_id: i64, params: JSON<AuthorChanges>) -> Result<JSON<Author>, Failure> {
-    use schema::authors::dsl::*;
+pub fn update(author_id: i64, params: JSON<AuthorChangeSet>) -> Result<JSON<Author>, Failure> {
+    use models::schema::authors::dsl::*;
 
     let mut change_set = params.unwrap();
 
@@ -66,7 +66,7 @@ pub fn update(author_id: i64, params: JSON<AuthorChanges>) -> Result<JSON<Author
 
 #[delete("/<author_id>", format = "application/json")]
 pub fn destroy(author_id: i64) -> Result<NoContent, Failure> {
-    use schema::authors::dsl::*;
+    use models::schema::authors::dsl::*;
 
     diesel::delete(authors.filter(id.eq(author_id)))
         .execute(&*CONNECTIONS.get().unwrap())

@@ -1,8 +1,11 @@
 use chrono::{UTC, DateTime};
 
-use schema::posts;
+use super::author::Author;
+use super::schema::posts;
 
-#[derive(Debug, Identifiable, Queryable, Serialize)]
+#[belongs_to(Author)]
+#[table_name = "posts"]
+#[derive(Associations, Debug, Identifiable, Queryable, Serialize)]
 pub struct Post {
     pub id: i64,
     pub body: String,
@@ -10,18 +13,20 @@ pub struct Post {
     pub published: bool,
     pub created_at: DateTime<UTC>,
     pub updated_at: DateTime<UTC>,
+    pub author_id: i64,
 }
 
-#[derive(Debug, Deserialize, Insertable)]
 #[table_name="posts"]
+#[derive(Debug, Deserialize, Insertable)]
 pub struct NewPost {
+    pub author_id: i64,
     pub title: String,
     pub body: String,
 }
 
-#[derive(AsChangeset, Debug, Deserialize)]
 #[table_name="posts"]
-pub struct PostChanges {
+#[derive(AsChangeset, Debug, Deserialize)]
+pub struct PostChangeSet {
     pub body: Option<String>,
     pub title: Option<String>,
     pub published: Option<bool>,
