@@ -2,7 +2,7 @@
 
 I have been interested in learning [Rust](https://www.rust-lang.org/en-US/) so I
 decided to build a simple REST API for a blog using [Rocket](https://rocket.rs/)
-and [Diesel](https://diesel.rs/). This is still a work in progress but overall
+and [Diesel](http://diesel.rs/). This is still a work in progress but overall
 it has been a fun project!
 
 ## Set Up
