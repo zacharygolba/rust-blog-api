@@ -47,6 +47,15 @@ command.
 cargo run
 ```
 
+## Testing
+
+*Ensure that psql is available at your $PATH. If you're using Postgres.app [
+follow these instuctions](https://postgresapp.com/documentation/cli-tools.html).*
+
+```bash
+make test
+```
+
 ## Deploying
 
 To deploy the application, first create an executable binary.

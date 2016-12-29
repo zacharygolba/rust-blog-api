@@ -73,3 +73,30 @@ pub fn destroy(author_id: i64) -> Result<NoContent, Failure> {
         .and(Ok(NoContent))
         .or(Err(Failure(Status::NotFound)))
 }
+
+#[cfg(test)]
+mod tests {
+    use rocket;
+    use rocket::http::Method::*;
+    use rocket::testing::MockRequest;
+
+    use super::*;
+
+    #[test]
+    fn test_show() {
+        let server = rocket::ignite().mount("/", routes![show]);
+        let mut req = MockRequest::new(Get, "/1");
+        let res = req.dispatch_with(&server);
+
+        assert_eq!(res.status(), Status::Ok);
+    }
+
+    #[test]
+    fn test_index() {
+        let server = rocket::ignite().mount("/", routes![index]);
+        let mut req = MockRequest::new(Get, "/");
+        let res = req.dispatch_with(&server);
+
+        assert_eq!(res.status(), Status::Ok);
+    }
+}
