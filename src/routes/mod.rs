@@ -1,11 +1,13 @@
-use rocket;
+use rocket::Rocket;
 
 mod application;
 mod authors;
 mod errors;
 mod posts;
 
-pub fn mount(server: rocket::Rocket) -> rocket::Rocket {
+pub fn mount(server: Rocket) -> Rocket {
+    use rocket;
+
     server.mount("/", routes![application::health])
         .mount("/posts", routes![
             posts::show,
