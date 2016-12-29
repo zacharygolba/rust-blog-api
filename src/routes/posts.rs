@@ -87,7 +87,7 @@ mod tests {
         let server = rocket::ignite().mount("/", routes![show]);
         let mut req = MockRequest::new(Get, "/1");
         let res = req.dispatch_with(&server);
-
+        
         assert_eq!(res.status(), Status::Ok);
     }
 
