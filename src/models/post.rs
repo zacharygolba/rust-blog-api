@@ -19,9 +19,9 @@ pub struct Post {
 #[table_name="posts"]
 #[derive(Debug, Deserialize, Insertable)]
 pub struct NewPost {
-    pub author_id: i64,
-    pub title: String,
     pub body: String,
+    pub title: String,
+    pub author_id: i64,
 }
 
 #[table_name="posts"]
