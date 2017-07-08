@@ -59,7 +59,7 @@ fn create() -> JSONResult<Value> {
             "attributes": {},
         },
         "links": {
-            "self": format!("http://localhost:3000/authors/", id),
+            "self": format!("http://localhost:3000/authors/{}", id),
         },
     });
 
