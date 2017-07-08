@@ -1,0 +1,4 @@
+chain_indent = "Visual"
+ideal_width = 80
+max_width = 99
+use_try_shorthand = true

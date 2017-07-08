@@ -1,0 +1,14 @@
+[global]
+address = "0.0.0.0"
+
+[development]
+log = "normal"
+port = 80
+
+[staging]
+log = "normal"
+port = 80
+
+[production]
+log = "critical"
+port = 443

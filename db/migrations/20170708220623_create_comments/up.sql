@@ -1,0 +1,7 @@
+CREATE TABLE comments (
+    id BIGSERIAL PRIMARY KEY,
+    edited BOOLEAN NOT NULL DEFAULT FALSE,
+    message TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
+)

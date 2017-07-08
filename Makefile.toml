@@ -1,0 +1,25 @@
+[tasks.build]
+args = ["build", "--manifest-path", "./api/Cargo.toml"]
+command = "cargo"
+
+[tasks.build-release]
+args = ["build", "--manifest-path", "./api/Cargo.toml", "--release"]
+command = "cargo"
+
+[tasks.db-migrate]
+args = ["migration", "run", "--migration-dir", "./db/migrations"]
+command = "diesel"
+
+[tasks.db-rollback]
+args = ["migration", "revert", "--migration-dir", "./db/migrations"]
+command = "diesel"
+
+[tasks.run]
+args = ["run", "--manifest-path", "./api/Cargo.toml"]
+command = "cargo"
+dependencies = ["db-migrate"]
+
+[tasks.run-release]
+args = ["run", "--manifest-path", "./api/Cargo.toml", "--release"]
+command = "cargo"
+dependencies = ["db-migrate"]
