@@ -1,23 +1,11 @@
-use chrono::{DateTime, Utc};
-use rocket_contrib::JSON;
+use rocket_contrib::Json;
 use rocket::response::status::NoContent;
-use rocket::Route;
 use serde_json::Value;
 
-use error::{Result, JSONResult};
-
-pub fn comments() -> Vec<Route> {
-    routes![
-        create,
-        destroy,
-        index,
-        show,
-        update,
-    ]
-}
+use error::{Result, JsonResult};
 
 #[get("/<id>")]
-fn show(id: i64) -> JSONResult<Value> {
+pub fn show(id: i64) -> JsonResult<Value> {
     let id = id.to_string();
     let resp = json!({
         "data": {
@@ -30,11 +18,11 @@ fn show(id: i64) -> JSONResult<Value> {
         },
     });
 
-    Ok(JSON(resp))
+    Ok(Json(resp))
 }
 
 #[get("/")]
-fn index() -> JSONResult<Value> {
+pub fn index() -> JsonResult<Value> {
     let resp = json!({
         "data": [],
         "links": {
@@ -46,11 +34,11 @@ fn index() -> JSONResult<Value> {
         },
     });
 
-    Ok(JSON(resp))
+    Ok(Json(resp))
 }
 
-#[post("/", format = "application/vnd.api+json")]
-fn create() -> JSONResult<Value> {
+#[post("/", format = "application/json")]
+pub fn create() -> JsonResult<Value> {
     let id = "1";
     let resp = json!({
         "data": {
@@ -63,11 +51,11 @@ fn create() -> JSONResult<Value> {
         },
     });
 
-    Ok(JSON(resp))
+    Ok(Json(resp))
 }
 
-#[patch("/<id>", format = "application/vnd.api+json")]
-fn update(id: i64) -> JSONResult<Value> {
+#[patch("/<id>", format = "application/json")]
+pub fn update(id: i64) -> JsonResult<Value> {
     let id = id.to_string();
     let resp = json!({
         "data": {
@@ -80,11 +68,11 @@ fn update(id: i64) -> JSONResult<Value> {
         },
     });
 
-    Ok(JSON(resp))
+    Ok(Json(resp))
 }
 
 #[delete("/<id>")]
-fn destroy(id: i64) -> Result<NoContent> {
+pub fn destroy(id: i64) -> Result<NoContent> {
     Ok(NoContent)
 }
 

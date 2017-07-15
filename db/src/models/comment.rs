@@ -1,8 +1,9 @@
 use chrono::{DateTime, Utc};
 
-use super::Model;
+use model::Model;
+use schema::comments;
 
-#[derive(Debug, Queryable, Serialize)]
+#[derive(Debug, Identifiable, Queryable, Serialize)]
 pub struct Comment {
     pub id: i64,
     pub edited: bool,

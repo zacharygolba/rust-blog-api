@@ -1,14 +1,15 @@
 use chrono::{DateTime, Utc};
 
-use super::Model;
+use model::Model;
+use schema::posts;
 
-#[derive(Debug, Queryable, Serialize)]
+#[derive(Debug, Identifiable, Queryable, Serialize)]
 pub struct Post {
     pub id: i64,
     // pub author_id: i64,
-    pub body: Option<String>,
     pub title: String,
-    pub published_at: DateTime<Utc>,
+    pub body: Option<String>,
+    pub published_at: Option<DateTime<Utc>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

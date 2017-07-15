@@ -1,15 +1,29 @@
 [package]
+authors = ["Zachary Golba <zachary.golba@postlight.com>"]
 name = "blog-db"
 version = "0.1.0"
-authors = ["Zachary Golba <zachary.golba@postlight.com>"]
 
 [dependencies]
-chrono = { version = "0.4.0", features = ["serde"] }
-diesel = { version = "0.14.0", features = ["postgres"] }
-diesel_codegen = { version = "0.14.0", features = ["postgres"] }
+dotenv = "0.10.1"
 lazy_static = "0.2.8"
 r2d2 = "0.7.2"
 r2d2-diesel = "0.14.0"
+rocket = "0.3.0"
 serde = "1.0.9"
 serde_derive = "1.0.9"
 serde_json = "1.0.2"
+
+[dependencies.blog-fmt]
+path = "../fmt"
+
+[dependencies.chrono]
+features = ["serde"]
+version = "0.4.0"
+
+[dependencies.diesel]
+features = ["chrono", "postgres"]
+version = "0.14.0"
+
+[dependencies.diesel_codegen]
+features = ["postgres"]
+version = "0.14.0"

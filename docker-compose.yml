@@ -5,7 +5,7 @@ services:
     container_name: blog-api
     depends_on:
     - blog-postgres
-    env_file: .env
+    env_file: .docker.env
     links:
     - blog-postgres
     ports:
@@ -14,7 +14,7 @@ services:
     - ./:/usr/src/rust-blog-api
   blog-postgres:
     container_name: blog-postgres
-    env_file: .env
+    env_file: .docker.env
     image: postgres
     ports:
     - "5433:5432"
