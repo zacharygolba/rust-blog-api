@@ -64,51 +64,46 @@ where
     fn from_form(params: &mut FormItems<'f>, strict: bool) -> Result<CollectionQuery<F, I>, ()> {
         let mut query = CollectionQuery::new();
 
-        params.filter_map(decode::entry).for_each(|(key, value)| {
-            println!("key({}) => val({})", key, value);
-            println!("{:?} - IS FIELD?: {}", *KEY_REGEX, KEY_REGEX.is_match(&key));
-
-            match key.as_str() {
-                "include" => {
-                    query.include = Include::try_from(value).ok();
-                }
-                "page[number]" => {
-                    let size = match query.page {
-                        Some(ref page) => page.size(),
-                        _ => Page::DEFAULT_SIZE,
-                    };
-
-                    match value.parse::<u64>() {
-                        Ok(num) => query.page = Some(Page::new(num, size)),
-                        Err(_) => unimplemented!(),
-                    }
-                }
-                "page[size]" => {
-                    let num = match query.page {
-                        Some(ref page) => page.number(),
-                        _ => 1,
-                    };
-
-                    match value.parse::<u64>() {
-                        Ok(size) => query.page = Some(Page::new(num, size)),
-                        Err(_) => unimplemented!(),
-                    }
-                }
-                key @ _ if KEY_REGEX.is_match(key) => {
-                    match query.fields {
-                        Some(ref mut fields) => {
-                            fields.try_insert(key, value);
-                        }
-                        None => {
-                            let mut fields = Fields::default();
-
-                            fields.try_insert(key, value);
-                            query.fields = Some(fields);
-                        }
-                    }
-                }
-                _ => (),
+        params.filter_map(decode::entry).for_each(|(key, value)| match key.as_str() {
+            "include" => {
+                query.include = Include::try_from(value).ok();
             }
+            "page[number]" => {
+                let size = match query.page {
+                    Some(ref page) => page.size(),
+                    _ => Page::DEFAULT_SIZE,
+                };
+
+                match value.parse::<u64>() {
+                    Ok(num) => query.page = Some(Page::new(num, size)),
+                    Err(_) => unimplemented!(),
+                }
+            }
+            "page[size]" => {
+                let num = match query.page {
+                    Some(ref page) => page.number(),
+                    _ => 1,
+                };
+
+                match value.parse::<u64>() {
+                    Ok(size) => query.page = Some(Page::new(num, size)),
+                    Err(_) => unimplemented!(),
+                }
+            }
+            key @ _ if KEY_REGEX.is_match(key) => {
+                match query.fields {
+                    Some(ref mut fields) => {
+                        fields.try_insert(key, value);
+                    }
+                    None => {
+                        let mut fields = Fields::default();
+
+                        fields.try_insert(key, value);
+                        query.fields = Some(fields);
+                    }
+                }
+            }
+            _ => (),
         });
 
         Ok(query)
