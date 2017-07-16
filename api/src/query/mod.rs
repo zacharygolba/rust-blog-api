@@ -1,13 +1,13 @@
-pub mod collection;
 pub mod error;
-pub mod fields;
-pub mod include;
-pub mod member;
-pub mod page;
 
-mod csv;
-mod decode;
+mod collection;
+mod fields;
+mod include;
+mod member;
+mod page;
 
-pub use self::collection::CollectionQuery;
-pub use self::error::QueryError;
-pub use self::member::MemberQuery;
+pub use self::collection::CollectionParams;
+pub use self::fields::Fields;
+pub use self::include::Include;
+pub use self::member::MemberParams;
+pub use self::page::Page;

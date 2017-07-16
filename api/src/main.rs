@@ -1,14 +1,11 @@
-#![feature(custom_attribute, iterator_for_each, plugin, try_from)]
+#![feature(custom_attribute, plugin, try_from)]
 #![plugin(rocket_codegen)]
 
 #[macro_use]
 extern crate lazy_static;
 
-#[macro_use]
-extern crate rocket_contrib;
-
-#[macro_use]
-extern crate serde_derive;
+// #[macro_use]
+// extern crate serde_derive;
 
 #[macro_use]
 extern crate serde_json;
@@ -19,6 +16,7 @@ extern crate dotenv;
 extern crate rayon;
 extern crate regex;
 extern crate rocket;
+extern crate rocket_contrib;
 extern crate serde;
 
 extern crate blog_db;

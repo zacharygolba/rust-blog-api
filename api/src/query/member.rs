@@ -2,82 +2,78 @@ use std::convert::TryFrom;
 
 use rocket::request::{FromForm, FormItems};
 
-use super::decode;
-use super::fields::{KEY_REGEX, Entry, Fields};
+use super::error::InvalidValueError;
+use super::fields::{KEY_REGEX, Fields, FieldSet};
 use super::include::Include;
 
 #[derive(Debug)]
-pub struct MemberQuery<F, I>
+pub struct MemberParams<'f, F, I>
 where
-    F: TryFrom<Entry>,
-    I: TryFrom<String>,
+    F: TryFrom<FieldSet<'f>, Error = InvalidValueError> + 'f,
+    I: TryFrom<&'f str, Error = InvalidValueError> + 'f,
 {
-    fields: Option<Fields<F>>,
-    include: Option<Include<I>>,
+    fields: Fields<'f, F>,
+    include: Include<'f, I>,
 }
 
-impl<F, I> MemberQuery<F, I>
+impl<'f, F, I> MemberParams<'f, F, I>
 where
-    F: TryFrom<(String, Vec<String>)>,
-    I: TryFrom<String>,
+    F: TryFrom<FieldSet<'f>, Error = InvalidValueError> + 'f,
+    I: TryFrom<&'f str, Error = InvalidValueError> + 'f,
 {
-    pub fn new() -> MemberQuery<F, I> {
-        MemberQuery::default()
+    pub fn new() -> MemberParams<'f, F, I> {
+        MemberParams::default()
     }
 
-    pub fn fields(&self) -> Option<&Fields<F>> {
-        self.fields.as_ref()
+    #[allow(dead_code)]
+    pub fn fields(&self) -> &Fields<'f, F> {
+        &self.fields
     }
 
-    pub fn include(&self) -> Option<&Include<I>> {
-        self.include.as_ref()
+    #[allow(dead_code)]
+    pub fn include(&self) -> &Include<'f, I> {
+        &self.include
     }
 }
 
-impl<F, I> Default for MemberQuery<F, I>
+impl<'f, F, I> Default for MemberParams<'f, F, I>
 where
-    F: TryFrom<(String, Vec<String>)>,
-    I: TryFrom<String>,
+    F: TryFrom<FieldSet<'f>, Error = InvalidValueError> + 'f,
+    I: TryFrom<&'f str, Error = InvalidValueError> + 'f,
 {
-    fn default() -> MemberQuery<F, I> {
-        MemberQuery {
-            fields: None,
-            include: None,
+    fn default() -> MemberParams<'f, F, I> {
+        MemberParams {
+            fields: Fields::default(),
+            include: Include::default(),
         }
     }
 }
 
-impl<'f, F, I> FromForm<'f> for MemberQuery<F, I>
+impl<'f, F, I> FromForm<'f> for MemberParams<'f, F, I>
 where
-    F: TryFrom<(String, Vec<String>)>,
-    I: TryFrom<String>,
+    F: TryFrom<FieldSet<'f>, Error = InvalidValueError> + 'f,
+    I: TryFrom<&'f str, Error = InvalidValueError> + 'f,
 {
-    type Error = ();
+    type Error = InvalidValueError;
 
-    fn from_form(params: &mut FormItems<'f>, strict: bool) -> Result<MemberQuery<F, I>, ()> {
-        let mut query = MemberQuery::new();
+    #[allow(unused_variables)]
+    fn from_form(
+        params: &mut FormItems<'f>,
+        strict: bool,
+    ) -> Result<MemberParams<'f, F, I>, InvalidValueError> {
+        let mut query = MemberParams::new();
 
-        params.filter_map(decode::entry).for_each(
-            |(key, value)| match key.as_str() {
+        for (key, value) in params {
+            match key.as_str() {
                 "include" => {
-                    query.include = Include::try_from(value).ok();
+                    query.include = Include::try_from(value)?;
                 }
                 key @ _ if KEY_REGEX.is_match(key) => {
-                    match query.fields {
-                        Some(ref mut fields) => {
-                            fields.try_insert(key, value);
-                        }
-                        None => {
-                            let mut fields = Fields::default();
-
-                            fields.try_insert(key, value);
-                            query.fields = Some(fields);
-                        }
-                    }
+                    query.fields.try_insert(key, value)?;
                 }
                 _ => (),
-            },
-        );
+            }
+        }
 
         Ok(query)
     }

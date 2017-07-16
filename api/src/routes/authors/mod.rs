@@ -14,20 +14,20 @@ use rocket::State;
 use serde_json::Value;
 
 use error::{CreatedResult, JsonResult};
-use query::{CollectionQuery, MemberQuery};
+use query::{CollectionParams, MemberParams};
 
-use self::fields::Fields;
-use self::include::Include;
+pub use self::fields::Fields;
+pub use self::include::Include;
 
-#[get("/<author_id>?<query>")]
+#[get("/<author_id>?<params>")]
 pub fn show(
     author_id: i64,
-    query: MemberQuery<Fields, Include>,
+    params: MemberParams<Fields, Include>,
     pool: State<ConnectionPool>,
 ) -> JsonResult<Author> {
     use blog_db::authors::dsl::*;
 
-    println!("{:#?}", query);
+    println!("{:#?}", params);
 
     authors.find(author_id)
            .first::<Author>(&*pool.get().unwrap())
@@ -38,16 +38,16 @@ pub fn show(
     })
 }
 
-#[get("/?<query>")]
+#[get("/?<params>")]
 pub fn index(
-    query: CollectionQuery<Fields, Include>,
+    params: CollectionParams<Fields, Include>,
     pool: State<ConnectionPool>,
 ) -> Json<Vec<Author>> {
     use blog_db::authors::dsl::*;
 
-    let page = query.page().unwrap_or_default();
+    println!("{:#?}", params);
 
-    println!("{:#?}", query);
+    let page = params.page();
 
     authors.limit(page.size() as i64)
            .offset(page.offset() as i64)

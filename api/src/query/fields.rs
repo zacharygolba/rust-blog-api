@@ -1,69 +1,52 @@
 use std::convert::TryFrom;
+use std::marker::PhantomData;
 
 use regex::Regex;
 
+use super::error::InvalidValueError;
+
 lazy_static! {
-    pub static ref KEY_REGEX: Regex = Regex::new(r"fields\[(.+)\]").expect("Invalid regexp.");
+    pub static ref KEY_REGEX: Regex = Regex::new(r"fields%5B(.+)%5D").expect("Invalid regexp.");
 }
 
-pub type Entry = (String, Vec<String>);
+pub type FieldSet<'f> = (&'f str, Vec<&'f str>);
 
 #[derive(Debug)]
-pub struct Fields<T>
+pub struct Fields<'f, T>
 where
-    T: TryFrom<Entry>,
+    T: TryFrom<FieldSet<'f>, Error = InvalidValueError> + 'f,
 {
     value: Vec<T>,
+    form: PhantomData<&'f T>,
 }
 
-impl<T> Fields<T>
+impl<'f, T> Fields<'f, T>
 where
-    T: TryFrom<Entry>,
+    T: TryFrom<FieldSet<'f>, Error = InvalidValueError>,
 {
-    pub fn new() -> Fields<T> {
-        Fields::default()
-    }
-
-    pub fn try_insert<K, V>(&mut self, key: K, value: V) -> Result<(), ()>
-    where
-        K: AsRef<str>,
-        V: AsRef<str>,
-    {
-        let entry = (extract_key(key), extract_value(value));
-
-        self.value.push(T::try_from(entry).map_err(|_| ())?);
+    pub fn try_insert(&mut self, key: &'f str, value: &'f str) -> Result<(), InvalidValueError> {
+        self.value
+            .push(T::try_from((extract_key(key), extract_value(value)))?);
         Ok(())
     }
 }
 
-impl<T> Default for Fields<T>
+impl<'f, T> Default for Fields<'f, T>
 where
-    T: TryFrom<Entry>,
+    T: TryFrom<FieldSet<'f>, Error = InvalidValueError>,
 {
-    fn default() -> Fields<T> {
-        Fields { value: Vec::new() }
+    fn default() -> Fields<'f, T> {
+        Fields {
+            value: Vec::new(),
+            form: PhantomData,
+        }
     }
 }
 
-fn extract_key<T>(key: T) -> String
-where
-    T: AsRef<str>,
-{
-    KEY_REGEX.captures(key.as_ref())
-             .unwrap()
-             .get(1)
-             .unwrap()
-             .as_str()
-             .into()
+fn extract_key<'f>(key: &'f str) -> &'f str {
+    KEY_REGEX.captures(key).unwrap().get(1).unwrap().as_str()
 }
 
-fn extract_value<T>(value: T) -> Vec<String>
-where
-    T: AsRef<str>,
-{
-    value.as_ref()
-         .split(',')
-         .map(|item| item.trim())
-         .map(String::from)
-         .collect()
+fn extract_value<'f>(value: &'f str) -> Vec<&'f str> {
+    value.split(',').map(|item| item.trim()).collect()
 }

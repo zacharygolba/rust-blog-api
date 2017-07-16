@@ -1,3 +1,5 @@
+#![allow(unused_variables)]
+
 use rocket_contrib::Json;
 use rocket::response::status::NoContent;
 use serde_json::Value;
