@@ -13,8 +13,7 @@ use serde_json::Value;
 use error::JsonResult;
 use query::MemberParams;
 
-use super::fields::Fields;
-use super::include::Include;
+use super::params::{Fields, Include};
 
 type Params<'req> = MemberParams<'req, Fields, Include>;
 

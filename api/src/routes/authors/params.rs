@@ -52,6 +52,22 @@ impl<'f> TryFrom<&'f str> for AuthorFields {
     }
 }
 
+#[derive(Debug, Eq, Hash, PartialEq)]
+pub enum Include {
+    Posts,
+}
+
+impl<'f> TryFrom<&'f str> for Include {
+    type Error = InvalidValueError;
+
+    fn try_from(value: &'f str) -> Result<Include, InvalidValueError> {
+        match value {
+            "posts" => Ok(Include::Posts),
+            _ => Err(InvalidValueError::include(value.to_owned(), vec![])),
+        }
+    }
+}
+
 fn parse_values<'f, T>(values: Vec<&'f str>) -> Result<Vec<T>, InvalidValueError>
 where
     T: TryFrom<&'f str, Error = InvalidValueError> + 'f,

@@ -11,8 +11,7 @@ use rocket::State;
 use error::CreatedResult;
 use query::CollectionParams;
 
-use super::fields::Fields;
-use super::include::Include;
+use super::params::{Fields, Include};
 
 type Params<'req> = CollectionParams<'req, Fields, Include>;
 
